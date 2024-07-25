@@ -1,0 +1,180 @@
+﻿@model IEnumerable<Damagedproducts>
+@{
+}
+
+
+<div class="container">
+
+    <div class="container m-5">
+
+        <div class="row">
+            <div class="col">
+                <button class="btn btn-primary" onclick="AanewItemDamagedproducts()">
+                    <i class="fs-4 bi-cart-plus p-2"></i> <span class="ms-1 d-none d-sm-inline text-white">إضافة منتج التالف  </span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- Product Details Add Modal -->
+
+    <div class="modal fade" tabindex="-1" id="NewDamagedproducts">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">  المنتج التالف </h5>
+                </div>
+                <div class="modal-body">
+
+                    <form asp-action="CreateDamagedproducts" method="post">
+                        <div class="form-group">
+                            <label asp-for="@Model.FirstOrDefault().ProductId" class="control-label">Select Product</label>
+                            <select asp-for="@Model.FirstOrDefault().ProductId" class="form-control" asp-items="ViewBag.Products">
+                                <option value="">-- Select Product --</option>
+                            </select>
+                            <span asp-validation-for="@Model.FirstOrDefault().ProductId" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="@Model.FirstOrDefault().Qty" class="control-label">Quantity</label>
+                            <input asp-for="@Model.FirstOrDefault().Qty" class="form-control" />
+                            <span asp-validation-for="@Model.FirstOrDefault().Qty" class="text-danger"></span>
+                        </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء الأمر </button>
+                            <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">إضافة</button>
+                        </div>
+                    </form>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Details Deletion Modal -->
+    <div class="modal" tabindex="-1" id="confirmDamagedproducts">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">تأكيد الحذف</h5>
+                </div>
+                <div class="modal-body">
+                    <p>هل بالتأكيد تريد حذف المنتج التالف ؟</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء الأمر</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="ConfirmDelete()">نعم</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Product Details Update Modal -->
+
+    <div class="modal fade" tabindex="-1" id="UpdateDamagedproducts">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+
+                    <h5 class="modal-title"> تحديث الكميية التالفة </h5>
+                </div>
+                <div class="modal-body">
+                    <form asp-action="UpdateDamagedproducts" method="post">
+                        <div class="form-group">
+                            <label asp-for="@Model.FirstOrDefault().ProductId" class="control-label">Select Product</label>
+                            <select asp-for="@Model.FirstOrDefault().ProductId" name="ProductId" class="form-control" asp-items="ViewBag.Products">
+                                <option value="">-- Select Product --</option>
+                            </select>
+                            <span asp-validation-for="@Model.FirstOrDefault().ProductId" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="@Model.FirstOrDefault().Qty" class="control-label">Quantity</label>
+                            <input asp-for="@Model.FirstOrDefault().Qty" name="Qty" class="form-control" />
+                            <span asp-validation-for="@Model.FirstOrDefault().Qty" class="text-danger"></span>
+                        </div>
+                        <div class="modal-footer">
+                            <input type="hidden" name="Id" />
+
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء الأمر </button>
+                            <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">إضافة</button>
+                        </div>
+                    </form>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            @if (TempData["Add"] != null)
+            {
+                if (TempData["Add"].ToString() == "تمت الإضافة بنجاح" || TempData["Add"].ToString() == "تم التحديث بنجاح")
+                {
+                    <h2 class="alert alert-success m-2">@TempData["Add"] </h2>
+                }
+                else
+                {
+                    <h2 class="alert alert-danger m-2">@TempData["Add"] </h2>
+
+                }
+            }
+            else if (TempData["del"] != null)
+            {
+                if (@TempData["del"].ToString() == "True")
+                {
+                    <h2 class="alert alert-success">تم حذف المنتج</h2>
+                }
+            }
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card mt-5">
+                <div class="card-body">
+                    <table class="table table-bordered text-center">
+                        <thead class="bg-primary text-white">
+                            <tr>
+                                <th>اسم المنتج</th>
+                                <th>لون المنتج</th>
+                                <th>الكمية التالفة</th>
+                                <th colspan="2">إجراء </th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var items in Model)
+                            {
+                                <tr>
+                                    <td>@items.Product.Name</td>
+                                    <td>
+                                        @if (@items.Product.ProductDetails?.Color == null)
+                                        {
+                                            <p class="badge bg-danger">لايوجد لون مختار</p>
+                                        }
+                                        else
+                                        {
+                                            @items.Product.ProductDetails?.Color
+                                        }
+                                    </td>
+                                    <td>@items.Qty</td>
+                                    <td>
+                                        <a href="#" onclick="ShowDelDamagedproducts(@items.Id)">
+                                            <i class="bi bi-archive-fill text-danger"></i>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="#" onclick="ShowUpdateDamagedproductsModal(@items.Id)">
+                                            <i class="bi bi-pencil-fill text-success"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>

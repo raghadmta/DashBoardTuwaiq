@@ -1,0 +1,168 @@
+﻿@model IEnumerable<Product>
+
+@{
+    ViewData["Title"] = "إضافة منتج جديد";
+}
+
+<div class="container m-5">
+
+    <div class="row">
+        <div class="col">
+            <button class="btn btn-primary" onclick="AanewItem()">
+                <i class="fs-4 bi-cart-plus p-2"></i> <span class="ms-1 d-none d-sm-inline text-white">إضافة منتج جديد </span>
+            </button>
+        </div>
+    </div>
+</div>
+<!-- Product Add Modal -->
+
+<div class="modal fade" tabindex="-1" id="NewProduct">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">معلومات المنتج </h5>
+             </div>
+            <div class="modal-body">
+                <form asp-action="Create" method="post">
+
+                    <div class="row">
+                        <div class="col m-2">
+                            <label class="form-lable m-1" for="">اسم المنتج</label>
+                            <input type="text" name="Name" class="form-control form-control-sm" />
+                        </div>
+                    </div>
+                    <div class="col m-2">
+                        <label class="form-lable m-1" for="">وصف المنتج</label>
+                        <input type="text" name="description" class="form-control form-control-sm" />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء الأمر </button>
+                        <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">إضافة</button>
+                    </div>
+                </form>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+<!-- Product Deletion Modal -->
+<div class="modal" tabindex="-1" id="confirmProduct">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">تأكيد الحذف</h5>
+            </div>
+            <div class="modal-body">
+                <p>هل بالتأكيد تريد حذف المنتج؟</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء الأمر</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="ConfirmDelete()">نعم</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Product Update Modal -->
+
+<div class="modal fade" tabindex="-1" id="UpdateProduct">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+			<div class="modal-header">
+
+				<h5 class="modal-title"> تحديث معلومات المنتج </h5>
+            </div>
+            <div class="modal-body">
+                <form asp-action="Update" method="post">
+
+                    <div class="row">
+                        <div class="col m-2">
+                            <label class="form-lable m-1" for="">اسم المنتج</label>
+                            <input type="text" name="Name" class="form-control form-control-sm" />
+                        </div>
+                    </div>
+                    <div class="col m-2">
+                        <label class="form-lable m-1" for="">وصف المنتج</label>
+                        <input type="text" name="description" class="form-control form-control-sm" />
+                    </div>
+                    <div class="modal-footer">
+                        <input type="hidden" name="Id" />
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء الأمر </button>
+                        <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">تحديث</button>
+                    </div>
+                </form>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        @if (TempData["Add"] != null)
+        {
+            if (TempData["Add"].ToString() == "تمت الإضافة بنجاح" || TempData["Add"].ToString() == "تم التحديث بنجاح")
+            {
+                <h2 class="alert alert-success m-2">@TempData["Add"] </h2>
+            }
+            else
+            {
+                <h2 class="alert alert-danger m-2">@TempData["Add"] </h2>
+
+            }
+        }else if (TempData["del"] != null)
+        {
+            if (@TempData["del"].ToString() == "True")
+            {
+                <h2 class="alert alert-success">تم حذف المنتج</h2>
+            }
+        }
+    </div>
+</div>
+
+ 
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card mt-5">
+            <div class="card-body">
+                <table class="table table-bordered text-center">
+                    <thead class="bg-primary text-white">
+                        <tr>
+                            <th>رقم المنتج</th>
+                            <th>اسم المنتج</th>
+                            <th>وصف المنتج</th>
+                            <th colspan="2">إجراء </th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var items in Model)
+                        {
+                            <tr>
+                                <td>@items.Id</td>
+                                <td>@items.Name</td>
+                                <td>@items.Description</td>
+                                <td>
+                                    <a href="#" onclick="ShowDelProductModal(@items.Id)">
+                                        <i class="bi bi-archive-fill text-danger"></i>
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="#" onclick="ShowUpdateProductModal(@items.Id)">
+                                        <i class="bi bi-pencil-fill text-success"></i>
+                                    </a>
+                                </td>
+
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>
+
